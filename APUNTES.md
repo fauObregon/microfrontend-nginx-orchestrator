@@ -2,16 +2,16 @@
 
 ## Espacio de trabajo
 
-Creeremos un directorio llamado `microfrontend-nginx-orquestator/` con el siguiente comando:
+Creeremos un directorio llamado `microfrontend-nginx-orchestrator/` con el siguiente comando:
 
 ```powershell
-mkdir microfrontend-nginx-orchestator 
+mkdir microfrontend-nginx-orchestrator 
 ```
 
 No movemos al directorio creado
 
 ```powershell
-cd microfrontend-nginx-orchestator
+cd microfrontend-nginx-orchestrator
 ```
 
 ## Creamos los proyectos
@@ -114,7 +114,7 @@ Vue CLI v5.0.8
 
 
 Vue CLI v5.0.8
-✨  Creating project in D:\LABS\microfrontend\microfrontend-nginx-orchestator\mf-vue.
+✨  Creating project in D:\LABS\microfrontend\microfrontend-nginx-orchestrator\mf-vue.
 🗃  Initializing git repository...
 ⚙️  Installing CLI plugins. This might take a while...
 
@@ -189,7 +189,7 @@ npx create-react-app mf-react
 Resultado
 
 ```powershell
-Creating a new React app in D:\LABS\microfrontend\microfrontend-nginx-orchestator\mf-react.
+Creating a new React app in D:\LABS\microfrontend\microfrontend-nginx-orchestrator\mf-react.
 
 Installing packages. This might take a couple of minutes.
 Installing react, react-dom, and react-scripts with cra-template...
@@ -225,7 +225,7 @@ Run `npm audit` for details.
 
 Created git commit.
 
-Success! Created mf-react at D:\LABS\microfrontend\microfrontend-nginx-orquestator\mf-react
+Success! Created mf-react at D:\LABS\microfrontend\microfrontend-nginx-orchestrator\mf-react
 Inside that directory, you can run several commands:
 
   npm start

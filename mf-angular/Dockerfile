@@ -6,7 +6,7 @@ WORKDIR /app
 COPY . . 
 
 RUN npm ci --silent
-RUN npm run build
+RUN npm run build -- --deploy-url  /angular/
 
 # Starting NGINX
 FROM nginx:1.25.4
