@@ -485,3 +485,85 @@ docker run --rm -p 80:80 app-mf-vue:1.0
 
 
 
+## Despliegue
+
+Creamos los siguientes archivos
+
+**Dockerfile**
+
+```dockerfile
+FROM nginx:1.25.4
+
+COPY ./nginx.conf /etc/nginx/nginx.conf
+
+EXPOSE 80
+
+CMD [ "nginx", "-g", "daemon off;" ]
+
+```
+
+**nginx.conf**
+
+```nginx
+events {}
+
+http {
+    include mime.types;
+
+    server {
+        listen 80 default_server;
+        listen [::]:80 default_server;
+
+        location /angular {
+            rewrite ^/angular(.*) /$1 break;
+            proxy_pass http://mf-angular;
+        }
+
+        location /react {
+            rewrite ^/react(.*) /$1 break;
+            proxy_pass http://mf-react;
+        }
+
+        location /vue {
+            rewrite ^/vue(.*) /$1 break;
+            proxy_pass http://mf-vue;
+        }
+    }
+}
+```
+
+
+
+**compose.yml**
+
+```yaml
+version: '3.7'
+services:
+  mf-angular:
+    container_name: mf-angular
+    build: 
+      context: ./mf-angular
+
+  mf-react:
+    container_name: mf-react
+    build: 
+      context: ./mf-react
+
+  mf-vue:
+    container_name: mf-vue
+    build: 
+      context: ./mf-vue
+
+  orchestrator:
+    container_name: orchestrator
+    build: 
+      context: .
+    ports:
+      - "80:80"
+    depends_on:
+      - mf-angular
+      - mf-react
+      - mf-vue
+
+```
+
