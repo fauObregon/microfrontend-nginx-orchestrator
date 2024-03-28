@@ -14,11 +14,11 @@ No movemos al directorio creado
 cd microfrontend-nginx-orchestator
 ```
 
-### Creamos los proyectos
+## Creamos los proyectos
 
 Utilizaremos 3 proyectos de tres tecnologias  distintas, **Angular**, **Vue** y **React**
 
-#### Crear mf-angular
+### Crear mf-angular
 
 Ejecutamos el siguiente comando
 
@@ -57,7 +57,46 @@ CREATE mf-angular/src/assets/.gitkeep (0 bytes)
     Successfully initialized git.
 ```
 
-#### Crea proyecto mf-vue
+**Iniciar app angular**
+
+```powershell
+npm start
+```
+
+resultado
+
+```powershell
+> mf-angular@0.0.0 start
+> ng serve
+
+? Would you like to share 
+pseudonymous usage data about this   
+project with the Angular Team        
+at Google under Google's Privacy     
+Policy at 
+https://policies.google.com/privacy. 
+https://angular.io/analytics. No
+Global setting: enabled
+Local setting: disabled
+Effective status: disabled
+Initial chunk files | Names         |  Raw size
+polyfills.js        | polyfills     |  83.60 kB | 
+main.js             | main          |  21.97 kB | 
+styles.css          | styles        |  95 bytes | 
+
+                    | Initial total | 105.67 kB
+
+Application bundle generation complete. [4.504 seconds]
+
+Watch mode enabled. Watching for file changes...
+  ➜  Local:   http://localhost:4200/
+  ➜  press h + enter to show help
+
+```
+
+
+
+### Crea proyecto mf-vue
 
 Ejecutamos el siguiente comando
 
@@ -122,7 +161,24 @@ Run `npm audit` for details.
 
 ```
 
-#### Crear proyecto mf-react
+**Iniciar app Vue**
+
+```powershell
+npm run serve
+```
+
+Resultado
+
+```powershell
+work: http://192.168.100.166:8080/
+
+  Note that the development build is not optimized.
+  To create a production build, run npm run build.
+```
+
+
+
+### Crear proyecto mf-react
 
 Ejecutamos el siguiente comando.
 
@@ -192,4 +248,240 @@ We suggest that you begin by typing:
 
 Happy hacking!
 ```
+
+**Iniciar app React**
+
+```powershell
+npm start
+```
+
+Resultado
+
+```powershell
+Compiled successfully!
+
+You can now view mf-react in the browser.  
+
+  http://localhost:3000
+
+Note that the development build is not optimized.
+To create a production build, use npm run build.
+
+webpack compiled successfully
+```
+
+## Dockerizar los proyectos
+
+### Build docker image app- mf-angular
+
+Desde la raíz de nuestro espacio de trabajo nos ubicamos en la ruta `mf-angular`
+
+```powershell
+cd mf-angular/
+```
+
+Creamos los siguientes archivos:
+
+- **Dockerfile**
+
+```dockerfile
+# Building APP
+FROM node:20.12-alpine AS build
+
+WORKDIR /app
+
+COPY . . 
+
+RUN npm ci --silent
+RUN npm run build
+
+# Starting NGINX
+FROM nginx:1.25.4
+
+COPY ./nginx.conf /etc/nginx/nginx.conf
+COPY --from=build /app/dist/mf-angular/browser /usr/share/nginx/html
+
+```
+
+- **nginx.conf**
+
+```nginx
+events {}
+
+http {
+    include mime.types;
+
+    server {
+        listen 80 default_server;
+        listen [::]:80 default_server;
+
+        location / {
+            root /usr/share/nginx/html;
+            try_files $uri $uri/ /index.html;
+        }
+    }
+}
+```
+
+**.dockerignore**
+
+```
+/node_modules/
+```
+
+Ejecutamos el siguiente comando para generar la imagen
+
+```powershell
+ docker build -t app-mf-angular:1.0 .
+```
+
+Y para probar podemos ejecutar el siguiente comando que nos crear un contenedor efímero
+
+```powershell
+docker run --rm -p 80:80 app-mf-angular:1.0
+```
+
+
+
+### Build docker image app- mf-angular
+
+Desde la raíz de nuestro espacio de trabajo nos ubicamos en la ruta `mf-react`
+
+```powershell
+cd mf-react/
+```
+
+Creamos los siguientes archivos:
+
+- **Dockerfile**
+
+```dockerfile
+# Building APP
+FROM node:20.12-alpine AS build
+
+WORKDIR /app
+
+COPY . . 
+
+RUN npm ci --silent
+RUN npm run build
+
+# Starting NGINX
+FROM nginx:1.25.4
+
+COPY ./nginx.conf /etc/nginx/nginx.conf
+COPY --from=build /app/build /usr/share/nginx/html
+
+```
+
+- **nginx.conf**
+
+```nginx
+events {}
+
+http {
+    include mime.types;
+
+    server {
+        listen 80 default_server;
+        listen [::]:80 default_server;
+
+        location / {
+            root /usr/share/nginx/html;
+            try_files $uri $uri/ /index.html;
+        }
+    }
+}
+```
+
+**.dockerignore**
+
+```
+/node_modules/
+```
+
+Ejecutamos el siguiente comando para generar la imagen
+
+```powershell
+ docker build -t app-mf-angular:1.0 .
+```
+
+Y para probar podemos ejecutar el siguiente comando que nos crear un contenedor efímero
+
+```powershell
+docker run --rm -p 80:80 app-mf-react:1.0
+```
+
+
+
+### Build docker image app- mf-angular
+
+Desde la raíz de nuestro espacio de trabajo nos ubicamos en la ruta `mf-vue`
+
+```powershell
+cd mf-vue/
+```
+
+Creamos los siguientes archivos:
+
+- **Dockerfile**
+
+```dockerfile
+# Building APP
+FROM node:20.12-alpine AS build
+
+WORKDIR /app
+
+COPY . . 
+
+RUN npm ci --silent
+RUN npm run build
+
+# Starting NGINX
+FROM nginx:1.25.4
+
+COPY ./nginx.conf /etc/nginx/nginx.conf
+COPY --from=build /app/dist/ /usr/share/nginx/html
+
+```
+
+- **nginx.conf**
+
+```nginx
+events {}
+
+http {
+    include mime.types;
+
+    server {
+        listen 80 default_server;
+        listen [::]:80 default_server;
+
+        location / {
+            root /usr/share/nginx/html;
+            try_files $uri $uri/ /index.html;
+        }
+    }
+}
+```
+
+**.dockerignore**
+
+```
+/node_modules/
+```
+
+Ejecutamos el siguiente comando para generar la imagen
+
+```powershell
+ docker build -t app-mf-vue:1.0 .
+```
+
+Y para probar podemos ejecutar el siguiente comando que nos crear un contenedor efímero
+
+```powershell
+docker run --rm -p 80:80 app-mf-vue:1.0
+```
+
+
 
